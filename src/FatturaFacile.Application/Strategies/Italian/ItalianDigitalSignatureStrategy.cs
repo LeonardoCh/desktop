@@ -6,6 +6,11 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using FatturaFacile.Domain.Entities;
 
+using System.IO;
+using System.Reflection;
+using System.Xml;
+using System.Xml.Xsl;
+
 namespace FatturaFacile.Application.Strategies.Italian;
 
 /// <summary>
@@ -14,6 +19,25 @@ namespace FatturaFacile.Application.Strategies.Italian;
 /// </summary>
 public sealed class ItalianDigitalSignStrategy
 {
+
+    /// <summary>
+    /// Invoke XSLT transformation to insert the Digital Signature tags in the final XML invoice
+    /// </summary>
+    public void SetDigitalSign = 
+    {
+        var assembly = Assembly.GetExecutingAssembly();
+
+	string resourceName = "FatturaFacile.Application.Strategies.Italian.Resources/DigitalSignItaXsltTransformation.xslt";
+
+    	using Stream stream = assembly.GetManifestResourceStream(resourceName) 
+                          ?? throw new FileNotFoundException($"Risorsa XSLT non trovata: {resourceName}");
+
+    	using XmlReader xmlReader = XmlReader.Create(stream);
+
+    	XslCompiledTransform xslt = new XslCompiledTransform();
+    	xslt.Load(xmlReader);
+    }
+
     /// <summary>
     /// Gets or sets the primary key identifier.
     /// </summary>
